@@ -1,7 +1,9 @@
 #[derive(Debug)]
 pub enum Operator {
     // QOI_OP_INDEX
-    Index(u8),
+    Index {
+        idx: u8,
+    },
     // QOI_OP_DIFF and QOI_OP_LUMA
     Diff {
         diff_red: u8,
@@ -9,11 +11,22 @@ pub enum Operator {
         diff_blue: u8,
     },
     // QOI_OP_RUN
-    Run(u8),
+    Run {
+        length: u8,
+    },
     // QOI_OP_RGB
-    Rgb(u8, u8, u8),
+    Rgb {
+        r: u8,
+        g: u8,
+        b: u8,
+    },
     // QOI_OP_RGBA
-    Rgba(u8, u8, u8, u8),
+    Rgba {
+        r: u8,
+        g: u8,
+        b: u8,
+        a: u8,
+    },
 }
 
 pub struct OperatorIter<'a> {
@@ -49,7 +62,9 @@ impl<'a> Iterator for OperatorIter<'a> {
 
         match (op & 0b1100_0000) >> 6 {
             // QOI_OP_INDEX
-            0b00 => Some(Operator::Index(op & 0b0011_1111)),
+            0b00 => Some(Operator::Index {
+                idx: op & 0b0011_1111,
+            }),
             // QOI_OP_DIFF
             0b01 => {
                 let r = (op & 0b0011_0000) >> 4;
@@ -88,15 +103,17 @@ impl<'a> Iterator for OperatorIter<'a> {
                 // QOI_OP_RGB
                 0b0011_1110 => {
                     let [r, g, b] = self.take()?;
-                    Some(Operator::Rgb(r, g, b))
+                    Some(Operator::Rgb { r, g, b })
                 }
                 // QOI_OP_RGBA
                 0b0011_1111 => {
                     let [r, g, b, a] = self.take()?;
-                    Some(Operator::Rgba(r, g, b, a))
+                    Some(Operator::Rgba { r, g, b, a })
                 }
                 // QOI_OP_RUN
-                l => Some(Operator::Run(l.wrapping_add(1))),
+                l => Some(Operator::Run {
+                    length: l.wrapping_add(1),
+                }),
             },
         }
     }

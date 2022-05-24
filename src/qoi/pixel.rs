@@ -116,7 +116,7 @@ pub fn process_operators<I: Iterator<Item = Operator>, P: Pixel>(input: I) -> Ve
 
     for op in input {
         let n = match op {
-            Operator::Index(idx) => {
+            Operator::Index { idx } => {
                 pixel = previous_array[idx as usize];
                 1
             }
@@ -128,12 +128,12 @@ pub fn process_operators<I: Iterator<Item = Operator>, P: Pixel>(input: I) -> Ve
                 pixel.apply_diff(diff_red, diff_green, diff_blue);
                 1
             }
-            Operator::Run(length) => length,
-            Operator::Rgb(r, g, b) => {
+            Operator::Run { length } => length,
+            Operator::Rgb { r, g, b } => {
                 pixel.set_rgb(r, g, b);
                 1
             }
-            Operator::Rgba(r, g, b, a) => {
+            Operator::Rgba { r, g, b, a } => {
                 pixel.set_rgba(r, g, b, a);
                 1
             }
