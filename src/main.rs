@@ -29,9 +29,7 @@ fn main() -> Result<(), Error> {
             qoi_header.channels as u8,
         );
 
-        let mut hash_context = Md5::new();
-        hash_context.update(&pixel_data);
-        println!("{:x}", hash_context.finalize());
+        println!("{:x}", Md5::digest(&pixel_data));
     }
 
     Ok(())
